@@ -1,6 +1,3 @@
-
-
-# With Deploy Code
 from pathlib import Path
 from datetime import timedelta
 import environ
@@ -20,12 +17,7 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = [
-    # "localhost",
-    # "127.0.0.1",
-    # "localmarket-api.up.railway.app",
-    "*",
-]
+ALLOWED_HOSTS = ["*"]
 
 # =======================
 # APPS
@@ -41,7 +33,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "django_filters",
     "corsheaders",
-    "drf_yasg",
 
     "users",
     "products",
@@ -55,6 +46,8 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = "users.User"
+ROOT_URLCONF = "localmart_backend.urls"
+
 
 TEMPLATES = [
     {
@@ -71,13 +64,13 @@ TEMPLATES = [
     },
 ]
 
+
 # =======================
 # MIDDLEWARE
 # =======================
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -87,67 +80,41 @@ MIDDLEWARE = [
 ]
 
 # =======================
-# CORS
+# CORS (LOCAL)
 # =======================
-CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "https://local-market-coral.vercel.app",
-]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # =======================
-# DRF + JWT
+# DRF
 # =======================
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+        "rest_framework.permissions.AllowAny",
     ),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 12,
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
-DB_live = env("DB_LIVE", default=False)
-# =======================
-# DATABASE (Railway PostgreSQL)
-# =======================
-if DB_live:
 
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": env("DB_NAME"),
-            "USER": env("DB_USER"),
-            "PASSWORD": env("DB_PASSWORD"),
-            "HOST": env("DB_HOST"),
-            "PORT": env("DB_PORT", default="5432"),
-        }
+# =======================
+# DATABASE (SQLite ONLY)
+# =======================
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
 # =======================
 # STATIC & MEDIA
 # =======================
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
-
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -163,4 +130,3 @@ STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
 BACKEND_BASE_URL = env("BACKEND_BASE_URL")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-_AUTO_FIELD = "django.db.models.BigAutoField"
