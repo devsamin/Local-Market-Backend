@@ -1,7 +1,8 @@
+import os
 from pathlib import Path
 from datetime import timedelta
 import environ
-import os
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -9,15 +10,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ENV CONFIG
 # =======================
 env = environ.Env(
-    DEBUG=(bool, False)
+    DEBUG=(bool, False)  # default False
 )
-
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 SECRET_KEY = env("SECRET_KEY")
-DEBUG = env("DEBUG")
-
+DEBUG = env("DEBUG")  # True locally, False in production
 ALLOWED_HOSTS = ["*"]
+
+# =======================
+# DATABASE CONFIG
+# =======================
+DEPLOYMENT = env.bool("DEPLOYMENT", default=False)
+
+if DEPLOYMENT:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            env("DATABASE_URL"),
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # =======================
 # APPS
@@ -48,7 +66,9 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = "users.User"
 ROOT_URLCONF = "localmart_backend.urls"
 
-
+# =======================
+# TEMPLATES
+# =======================
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -63,7 +83,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 # =======================
 # MIDDLEWARE
@@ -80,7 +99,7 @@ MIDDLEWARE = [
 ]
 
 # =======================
-# CORS (LOCAL)
+# CORS
 # =======================
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -99,16 +118,6 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-}
-
-# =======================
-# DATABASE (SQLite ONLY)
-# =======================
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
 }
 
 # =======================
