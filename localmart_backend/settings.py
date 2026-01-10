@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-
+import cloudinary
 import environ
 import dj_database_url
 
@@ -57,7 +57,7 @@ else:
         }
     }
 
-import cloudinary
+
 
 cloudinary.config(
     cloud_name=env("CLOUDINARY_CLOUD_NAME"),
