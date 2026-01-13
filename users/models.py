@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from cloudinary.models import CloudinaryField
 
 class User(AbstractUser):
     ROLE_CHOICES = (
@@ -14,7 +14,9 @@ class User(AbstractUser):
 
     # Buyer/Seller optional fields
     address = models.TextField(blank=True, null=True)
-    photo = models.FileField(upload_to='profile_photos/', blank=True, null=True)
+    # photo = models.FileField(upload_to='profile_photos/', blank=True, null=True)
+    # ✅ Cloudinary profile photo
+    photo = CloudinaryField('profile_photo', blank=True, null=True)
     businessName = models.CharField(max_length=255, blank=True, null=True)
     nidNumber = models.CharField(max_length=17, blank=True, null=True)
     bankAccount = models.CharField(max_length=50, blank=True, null=True)
