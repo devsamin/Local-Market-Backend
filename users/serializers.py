@@ -146,7 +146,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 # User Profile / Read
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = [
+#             'id', 'username', 'email', 'role',
+#             'location', 'phone', 'address', 'photo',
+#             'businessName', 'nidNumber', 'bankAccount'
+#         ]
+#         read_only_fields = ['email', 'role']
+
 class UserSerializer(serializers.ModelSerializer):
+    photo = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -155,6 +167,11 @@ class UserSerializer(serializers.ModelSerializer):
             'businessName', 'nidNumber', 'bankAccount'
         ]
         read_only_fields = ['email', 'role']
+
+    def get_photo(self, obj):
+        if obj.photo:
+            return obj.photo.url   # ✅ Cloudinary full URL
+        return None
 
 
 # JWT Login with role validation
