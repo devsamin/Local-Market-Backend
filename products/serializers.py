@@ -53,7 +53,9 @@ class ProductSerializer(serializers.ModelSerializer):
     categories = CategorySerializer(many=True, read_only=True)
 
     seller_location = serializers.CharField(source="seller.location", read_only=True)
-    
+    image = serializers.SerializerMethodField()
+    image2 = serializers.SerializerMethodField()
+    image3 = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
@@ -69,19 +71,13 @@ class ProductSerializer(serializers.ModelSerializer):
 
     # ✅ Cloudinary image URL return
     def get_image(self, obj):
-        if obj.image:
-            return obj.image.url   # 🔥 THIS IS THE KEY
-        return None
+        return obj.image.url if obj.image else None
 
     def get_image2(self, obj):
-        if obj.image2:
-            return obj.image2.url
-        return None
+        return obj.image2.url if obj.image2 else None
 
     def get_image3(self, obj):
-        if obj.image3:
-            return obj.image3.url
-        return None
+        return obj.image3.url if obj.image3 else None
     
     def get_average_rating(self, obj):
         result = obj.reviews.aggregate(avg=Avg('rating'))
