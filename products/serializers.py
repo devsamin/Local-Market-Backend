@@ -95,6 +95,9 @@ class ProductSerializer(serializers.ModelSerializer):
     )
 
     categories = CategorySerializer(many=True, read_only=True)
+    image = serializers.ImageField(required=False, allow_null=True)
+    image2 = serializers.ImageField(required=False, allow_null=True)
+    image3 = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Product
