@@ -45,8 +45,8 @@ def create_stripe_checkout(request):
         })
 
     # Success URL তে order_id পাঠানো
-    success_url = f"http://localhost:5173/payment-success?order_id={order.id}"
-    cancel_url = "http://localhost:5173/cart"
+    success_url = f"https://local-market-coral.vercel.app/payment-success?order_id={order.id}"
+    cancel_url = "https://local-market-coral.vercel.app/cart"
 
     session = stripe.checkout.Session.create(
         payment_method_types=["card"],
