@@ -34,7 +34,7 @@ def create_stripe_checkout(request):
 
         line_items.append({
             "price_data": {
-                "currency": "usd",
+                "currency": "usd",  # 🔥 Stripe-supported
                 "product_data": {
                     "name": product.name,
                 },
@@ -56,10 +56,11 @@ def create_stripe_checkout(request):
             metadata={"order_id": order.id},
         )
     except Exception as e:
-        print("Stripe Error:", str(e))
+        print("❌ Stripe Error:", str(e))
         return Response({"error": str(e)}, status=500)
 
     return Response({"checkout_url": session.url})
+
 
 from cart.models import CartItem
 
