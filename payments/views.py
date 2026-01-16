@@ -29,38 +29,35 @@ def create_stripe_checkout(request):
     for item in order.items.all():
         product = item.product
 
-        # ⚠️ Must be HTTPS in production
-        image_url = settings.BACKEND_BASE_URL + product.image.url
+        if not product.discounted_price:
+            return Response({"error": f"{product.name} has no price"}, status=400)
 
         line_items.append({
             "price_data": {
-                "currency": "bdt",
+                "currency": "usd",
                 "product_data": {
                     "name": product.name,
-                    "images": [image_url],
                 },
-                "unit_amount": int(product.discounted_price * 100),
+                "unit_amount": int(float(product.discounted_price) * 100),
             },
             "quantity": item.quantity,
         })
 
-    # Success URL তে order_id পাঠানো
     success_url = f"https://local-market-coral.vercel.app/payment-success?order_id={order.id}"
     cancel_url = "https://local-market-coral.vercel.app/cart"
 
-    session = stripe.checkout.Session.create(
-        payment_method_types=["card"],
-        mode="payment",
-        line_items=line_items,
-        success_url=success_url,
-        cancel_url=cancel_url,
-        metadata={"order_id": order.id},
-    )
-
-    # ⚠️ session.payment_intent কখনো None হতে পারে, তাই optional
-    if session.payment_intent:
-        order.transaction_id = session.payment_intent
-        order.save()
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            mode="payment",
+            line_items=line_items,
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={"order_id": order.id},
+        )
+    except Exception as e:
+        print("Stripe Error:", str(e))
+        return Response({"error": str(e)}, status=500)
 
     return Response({"checkout_url": session.url})
 

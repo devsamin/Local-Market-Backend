@@ -24,7 +24,7 @@
 #     except ValueError:
 #         # Invalid payload
 #         return HttpResponse(status=400)
-#     except stripe.error.SignatureVerificationError:
+    # except stripe.error.SignatureVerificationError:
 #         # Invalid signature
 #         return HttpResponse(status=400)
 
