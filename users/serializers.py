@@ -168,11 +168,21 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['email', 'role']
 
+    # def get_photo(self, obj):
+    #     if obj.photo:
+    #         return obj.photo.url   # ✅ Cloudinary full URL
+    #     return None
     def get_photo(self, obj):
         if obj.photo:
-            return obj.photo.url   # ✅ Cloudinary full URL
+            url = obj.photo.url
+            # ✅ If Cloudinary already gives full URL, return as-is
+            if url.startswith("http"):
+                return url
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(url)
+            return url
         return None
-
 
 # JWT Login with role validation
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
