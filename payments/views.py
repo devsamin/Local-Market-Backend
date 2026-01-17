@@ -34,7 +34,7 @@ def create_stripe_checkout(request):
 
         line_items.append({
             "price_data": {
-                "currency": "usd",  # 🔥 Stripe-supported
+                "currency": "usd",
                 "product_data": {
                     "name": product.name,
                 },
@@ -48,7 +48,6 @@ def create_stripe_checkout(request):
 
     try:
         session = stripe.checkout.Session.create(
-            payment_method_types=["card"],
             mode="payment",
             line_items=line_items,
             success_url=success_url,
